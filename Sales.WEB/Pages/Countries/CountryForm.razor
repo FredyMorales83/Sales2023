@@ -1,0 +1,26 @@
+﻿<EditForm Model="Country" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <div class="mb-3">
+        <label>Pais:</label>
+        <div>
+            <InputText class="form-control" @bind-Value=@Country.Name/>
+            <ValidationMessage For="@(() => Country.Name)" />
+        </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+    <button class="btn btn-success" onclick="@ReturnAction">Regresar</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Country Country { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReturnAction { get; set; }
+}

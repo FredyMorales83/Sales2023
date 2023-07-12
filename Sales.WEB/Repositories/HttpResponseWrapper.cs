@@ -13,7 +13,7 @@
             HttpResponseMessage = httpResponseMessage;
         }
 
-        public async Task<string?> GetErrorMessage()
+        public async Task<string?> GetErrorMessageAsync()
         {
             if (!Error)
             {
