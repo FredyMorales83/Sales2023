@@ -56,7 +56,7 @@ namespace Sales.WEB.Repositories
             return JsonSerializer.Deserialize<T>(respuestaString, jsonSerializerOptions)!;
         }
 
-        public async Task<HttpResponseWrapper<object>> Delete<T>(string url, T model)
+        public async Task<HttpResponseWrapper<object>> Delete<T>(string url)
         {
             var responseHttp = await _httpClient.DeleteAsync(url);
 

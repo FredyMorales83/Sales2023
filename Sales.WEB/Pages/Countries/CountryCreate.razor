@@ -5,10 +5,11 @@
 
 <h3>Crear pais</h3>
 
-<CountryForm Country="country" OnValidSubmit="Create" ReturnAction="Return"/>
+<CountryForm @ref="countryForm" Country="country" OnValidSubmit="Create" ReturnAction="Return"/>
 
 @code {
     private Country country = new();
+    private CountryForm? countryForm;
 
     private async Task Create()
     {
@@ -22,11 +23,13 @@
             return;
         }
 
+        countryForm!.FormPostedSuccessfully = true;
         navigationManager.NavigateTo("/countries");
     }
 
     private void Return()
     {
+        countryForm!.FormPostedSuccessfully = true;
         navigationManager.NavigateTo("/countries");
     }
 }

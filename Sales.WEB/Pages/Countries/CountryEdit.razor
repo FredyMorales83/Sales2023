@@ -1,0 +1,64 @@
+﻿@page "/countries/edit/{Id:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Editar país</h3>
+
+@if(country is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <CountryForm @ref="countryForm" Country="country" OnValidSubmit="Edit" ReturnAction="Return"/>    
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Country? country;
+    private CountryForm? countryForm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpResponse = await repository.Get<Country>($"/api/countries/{Id}");
+
+        if (httpResponse.Error)
+        {
+            if (httpResponse.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                await sweetAlertService.FireAsync("Error", "El pais no fue encontrado", SweetAlertIcon.Error);
+                navigationManager.NavigateTo("/countries");
+                return;
+            }
+
+            var message = await httpResponse.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+        }
+
+        country = httpResponse.Response;
+    }
+    private async Task Edit()
+    {
+        var responseHTTP = await repository.Put("api/countries", country);
+
+        if (responseHTTP.Error)
+        {
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+        }
+        else
+        {
+            
+            Return();
+        }
+
+    }
+
+    private void Return()
+    {
+        countryForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("countries");
+    }
+}
