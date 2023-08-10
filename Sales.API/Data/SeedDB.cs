@@ -21,7 +21,20 @@ namespace Sales.API.Data
         {
             if (!_context.Countries.Any())
             {
-                _context.Countries.Add(new Country { Name = "México" });
+                _context.Countries.Add(new Country
+                {
+                    Name = "México",
+                    States = new List<State>() {
+                        new State (){
+                            Name = "Chiapas",
+                            Cities = new List<City>() {
+                                new City { Name = "Tuxtla Gutierrez" },
+                                new City { Name = "Chiapa de Corzo" },
+                                new City { Name = "Tapachula" },
+                            }
+                        }
+                    }
+                });
                 _context.Countries.Add(new Country { Name = "Colombia" });
                 _context.Countries.Add(new Country { Name = "Guatemala" });
                 await _context.SaveChangesAsync();

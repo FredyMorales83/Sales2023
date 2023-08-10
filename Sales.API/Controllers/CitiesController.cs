@@ -7,11 +7,11 @@ namespace Sales.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CountriesController : ControllerBase
+    public class CitiesController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public CountriesController(DataContext context)
+        public CitiesController(DataContext context)
         {
             _context = context;
         }
@@ -19,37 +19,37 @@ namespace Sales.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _context.Countries.Include(c => c.States).OrderBy(c => c.Id).ToListAsync());
+            return Ok(await _context.Cities.OrderBy(c => c.Id).ToListAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var country = await _context.Countries.Include(c => c.States).FirstOrDefaultAsync(c => c.Id == id);
+            var city = await _context.Cities.FirstOrDefaultAsync(c => c.Id == id);
 
-            if (country == null)
+            if (city == null)
             {
                 return NotFound();
             }
 
-            return Ok(country);
+            return Ok(city);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(Country country)
+        public async Task<IActionResult> PostAsync(City city)
         {
             try
             {
-                _context.Add(country);
+                _context.Add(city);
                 await _context.SaveChangesAsync();
 
-                return Ok(country);
+                return Ok(city);
             }
             catch (DbUpdateException uex)
             {
                 if (uex.InnerException!.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe un pais con el mismo nombre");
+                    return BadRequest("Ya existe una ciudad con el mismo nombre");
                 }
 
                 return BadRequest(uex.Message);
@@ -61,20 +61,20 @@ namespace Sales.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutAsync(Country country)
+        public async Task<IActionResult> PutAsync(City city)
         {
             try
             {
-                _context.Update(country);
+                _context.Update(city);
                 await _context.SaveChangesAsync();
 
-                return Ok(country);
+                return Ok(city);
             }
             catch (DbUpdateException uex)
             {
                 if (uex.InnerException!.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe un pais con el mismo nombre");
+                    return BadRequest("Ya existe una ciudad con el mismo nombre");
                 }
 
                 return BadRequest(uex.Message);
@@ -88,14 +88,14 @@ namespace Sales.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var country = await _context.Countries.FirstOrDefaultAsync(c => c.Id == id);
+            var city = await _context.Cities.FirstOrDefaultAsync(c => c.Id == id);
 
-            if (country == null)
+            if (city == null)
             {
                 return NotFound();
             }
 
-            _context.Remove(country);
+            _context.Remove(city);
             await _context.SaveChangesAsync();
 
             return NoContent();
