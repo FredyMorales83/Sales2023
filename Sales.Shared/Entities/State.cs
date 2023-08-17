@@ -21,7 +21,7 @@ namespace Sales.Shared.Entities
 
         public Country? Country { get; set; }
 
-        public ICollection<City> Cities { get; set; }
+        public ICollection<City>? Cities { get; set; }
 
         public int CitiesNumber => Cities == null ? 0 : Cities.Count;
     }

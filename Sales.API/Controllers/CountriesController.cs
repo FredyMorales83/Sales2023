@@ -25,7 +25,7 @@ namespace Sales.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var country = await _context.Countries.Include(c => c.States).FirstOrDefaultAsync(c => c.Id == id);
+            var country = await _context.Countries.Include(c => c.States!).ThenInclude(s => s.Cities).FirstOrDefaultAsync(c => c.Id == id);
 
             if (country == null)
             {

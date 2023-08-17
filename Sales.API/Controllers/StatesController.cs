@@ -19,7 +19,7 @@ namespace Sales.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _context.States.OrderBy(c => c.Id).ToListAsync());
+            return Ok(await _context.States.Include(c => c.Cities).OrderBy(c => c.Id).ToListAsync());
         }
 
         [HttpGet("{id}")]
