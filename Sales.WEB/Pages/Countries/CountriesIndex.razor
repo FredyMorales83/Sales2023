@@ -5,22 +5,39 @@
 
 <h3>Paises</h3>
 
-<a href="/countries/create" class="btn btn-primary">Nuevo Pais</a>
+<div class="mb-2" style="display: flex; flex-wrap:wrap; align-items: center;">
+    <div>
+        <a class="btn btn-primary" href="/countries/create">Nuevo País</a>
+    </div>
+    <div class="mx-2">
+        <input style="width: 400px;" type="text" class="form-control" id="titulo" placeholder="Buscar país..." @bind-value="Filter" />
+    </div>
+    <div>
+        <button type="button" class="btn btn-outline-primary" @onclick="ApplyFilterAsync">Filtrar</button>
+        <button type="button" class="btn btn-outline-danger" @onclick="CleanFilterAsync">Limpiar</button>
+    </div>
+</div>
+
+
+
+<Pagination CurrentPage="currentPage"
+            TotalPages="totalPages"
+            SelectedPage="SelectedPage" />
 
 <GenericList MyList="Countries">
     <Body>
         <table class="table table-striped">
             <thead>
-                <tr>                    
+                <tr>
                     <th>País</th>
-                    <th>Estados</th>
-                    <th></th>
+                    <th style="width:220px">Estados / Departamentos</th>
+                    <th style="width:260px"></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var country in Countries!)
                 {
-                    <tr>                        
+                    <tr>
                         <td>
                             @country.Name
                         </td>
@@ -28,31 +45,69 @@
                             @country.StatesNumber
                         </td>
                         <td>
-                            <a class="btn btn-warning" href="/countries/details/@country.Id">Detalles</a>
+                            <a class="btn btn-info" href="/countries/details/@country.Id">Detalles</a>
                             <a class="btn btn-warning" href="/countries/edit/@country.Id">Editar</a>
-                            <button class="btn btn-danger" @onclick=@(()=>DeleteAsync(country.Id))>Borrar</button>
+                            <button class="btn btn-danger" @onclick=@(() => DeleteAsync(country.Id))>Borrar</button>
                         </td>
-                    </tr>   
+                    </tr>
                 }
             </tbody>
         </table>
     </Body>
 </GenericList>
 
-
 @code {
     public List<Country>? Countries { get; set; }
+    private int currentPage = 1;
+    private int totalPages;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Page { get; set; } = "";
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Filter { get; set; } = "";
 
      protected async override Task OnInitializedAsync()
     {
         await LoadAsync();
     }
 
-    private async Task LoadAsync()
+    private async Task SelectedPage(int page)
     {
-        var responseHppt = await repository.Get<List<Country>>("api/countries");
-        Countries = responseHppt.Response!;
+        currentPage = page;
+        await LoadAsync(page);
     }
+
+    private async Task LoadAsync(int page = 1)
+    {
+        if (!string.IsNullOrWhiteSpace(Page))
+        {
+            page = Convert.ToInt32(Page);
+        }
+
+        string url1 = string.Empty;
+        string url2 = string.Empty;
+
+        if (string.IsNullOrEmpty(Filter))
+        {
+            url1 = $"api/countries?page={page}";
+            url2 = $"api/countries/totalPages";
+        }
+        else
+        {
+            url1 = $"api/countries?page={page}&filter={Filter}";
+            url2 = $"api/countries/totalPages?filter={Filter}";
+        }
+
+
+        var responseHttp = await repository.Get<List<Country>>(url1);
+        var responseHttp2 = await repository.Get<int>(url2);
+        Countries = responseHttp.Response!;
+        totalPages = responseHttp2.Response!;
+    }
+
 
 
     private async Task DeleteAsync(int countryId)
@@ -92,4 +147,17 @@
         }
    
     }
+
+    private async Task CleanFilterAsync()
+    {
+        Filter = string.Empty;
+        await ApplyFilterAsync();
+    }
+
+    private async Task ApplyFilterAsync()
+    {
+        
+        await SelectedPage(1);
+    }
+
 }
